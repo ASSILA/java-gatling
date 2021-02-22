@@ -1,0 +1,75 @@
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+####webApp####
+# compiled output
+webapp/dist
+webapp/node
+webapp/dist-server
+webapp/tmp
+webapp/out-tsc
+
+# dependencies
+node_modules/
+webapp/node_modules
+webapp/yarn.lock
+webapp/package-lock.json
+# misc
+webapp/.sass-cache
+webapp/connect.lock
+webapp/coverage
+/libpeerconnection.log
+webapp/npm-debug.log
+webapp/yarn-error.log
+webapp/testem.log
+webapp/typings
+
+# e2e
+webapp/e2e/*.js
+webapp/e2e/*.map
+
+# System Files
+webapp/.DS_Store
+webapp/Thumbs.db
+
+# IDEs and editors
+webapp/.idea
+webapp/.project
+webapp/.classpath
+webapp/.c9/
+webapp/*.launch
+webapp/.settings/
+webapp/*.sublime-workspace
+
+# IDE - VSCode
+webapp/.vscode/*
+webapp/!.vscode/settings.json
+webapp/!.vscode/tasks.json
+webapp/!.vscode/launch.json
+webapp/!.vscode/extensions.json
+
+#Statis resources
+src/main/resources/static
