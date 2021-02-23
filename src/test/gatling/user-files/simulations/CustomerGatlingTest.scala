@@ -9,7 +9,7 @@ import scala.concurrent.duration._
 /**
  * Performance test for the Project entity.
  */
-class ProjectGatlingTest extends Simulation {
+class CustomerGatlingTest extends Simulation {
 
   val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
   // Log all HTTP requests
@@ -43,7 +43,7 @@ class ProjectGatlingTest extends Simulation {
     "Authorization" -> "${access_token}"
   )
 
-  val scn = scenario("Test the Project entity")
+  val scn = scenario("Test the Customer entity")
     .exec(http("First unauthenticated request")
       .get("/uaa-service/api/account")
       .headers(headers_http)
@@ -62,12 +62,54 @@ class ProjectGatlingTest extends Simulation {
       .check(status.is(200)))
     .pause(10)
     .repeat(2) {
-      exec(http("Get all project")
-        .get("/crm-service/api/findAllProjects")
+      exec(http("Get all Customer")
+        .get("/crm-service/api/customers")
         .headers(headers_http_authenticated)
         .check(status.is(200)))
         .pause(10 seconds, 20 seconds)
+      .exec(http("get a user with BizDev authority")
+        .post("/uaa-service/api/usersWithAuthority")
+        .headers(headers_http_authenticated)
+        .body(StringBody("""
+              ["BIZDEV"]
+                """)).asJson
+        .check(status.is(200))
+        .check(jsonPath("$[0].id").saveAs("bizdevId"))).exitHereIfFailed
+        .pause(10 seconds, 20 seconds)
+      .exec(http("Create new customer")
+        .post("/crm-service/api/customer")
+        .headers(headers_http_authenticated)
+        .body(StringBody("""{
+                "id":null
+                , "companyName":"Customer_Gatling"
+                , "bizDevsId": "${bizdevId}"
+                , "status":"Active"
+                , "partner":"false"
+                , "bizDevsId":"6025c578e78413604461dbc5"
+                , "address" : {
+                  "address" : "paris"
+                  , "postCode" : "75000"
+                  , "city" : "paris"
+                  , "country" : "France"
+                 }
+                }""")).asJson
+        .check(status.is(201))).exitHereIfFailed
         .pause(10)
+        .repeat(5) {
+          exec(http("Get Customer Created")
+            .get("/crm-service/api/customersSearch/Customer_Gatling")
+            .headers(headers_http_authenticated)
+            .check(status.is(200))
+            .check(jsonPath("$[*].id").saveAs("customerId"))).exitHereIfFailed
+            .pause(2)
+            .exec(http("Delete created Customer")
+              .delete("/crm-service/api/customer/${customerId}")
+              .headers(headers_http_authenticated)
+              .check(status.is(200)))
+            .pause(10)
+        }
+
+
     }
 
   val users = scenario("Users").exec(scn)
